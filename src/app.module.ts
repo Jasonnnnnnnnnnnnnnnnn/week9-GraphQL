@@ -6,6 +6,10 @@ import { OwnerModule } from './owner/owner.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Owner } from './owner/entities/owner.entity';
 import { Pet } from './pet/entities/pet.entity';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
+import { DataSource } from 'typeorm';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -13,8 +17,19 @@ import { Pet } from './pet/entities/pet.entity';
     database: 'database.db',
     entities: [Owner, Pet],
     synchronize: true,
-  }), PetModule, OwnerModule],
+  }), 
+  GraphQLModule.forRoot<ApolloDriverConfig>({
+    driver: ApolloDriver,
+    autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+    sortSchema: true,
+  }),
+  
+  PetModule, 
+  OwnerModule,
+],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule { 
+  constructor(private dataSource: DataSource) {}
+}

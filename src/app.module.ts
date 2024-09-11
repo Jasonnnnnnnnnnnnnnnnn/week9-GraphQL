@@ -3,10 +3,18 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PetModule } from './pet/pet.module';
 import { OwnerModule } from './owner/owner.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Owner } from './owner/entities/owner.entity';
+import { Pet } from './pet/entities/pet.entity';
 
 @Module({
-  imports: [PetModule, OwnerModule],
+  imports: [TypeOrmModule.forRoot({
+    type: 'sqlite',
+    database: 'database.db',
+    entities: [Owner, Pet],
+    synchronize: true,
+  }), PetModule, OwnerModule],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
